@@ -14,6 +14,23 @@ state-of-the-art models.
 
 ---
 
+## Model Architecture
+
+<p align="center">
+  <img src="figures/overview_of_TFBindFormer.pdf" width="800">
+</p>
+
+**Overview of TFBindFormer architecture.**
+
+<p align="center">
+  <img src="figures/The_hybrid_cross_attention_module.pdf" width="650">
+</p>
+
+**Hybrid cross-attention module illustrating residue–nucleotide interactions.**
+
+---
+
+
 ## Features
 
 - Hybrid cross-attention architecture for explicit residue–nucleotide interactions  
