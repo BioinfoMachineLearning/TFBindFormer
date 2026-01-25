@@ -10,15 +10,22 @@ readme = "README.md"
 requires-python = ">=3.9"
 
 authors = [
-  { name = "Your Name", email = "your.email@institution.edu" }
+  { name = "Ping Liu", email = "pl5vw@missouri.edu" }
 ]
 
 dependencies = [
   "torch",
+  "pytorch-lightning",
   "numpy",
   "pandas",
+  "matplotlib",
+  "wandb",
+  "torchmetrics",
   "scikit-learn",
-  "pyyaml"
+  "biopython",
+  "transformers",
+  "sentencepiece",
+  "tqdm"
 ]
 
 [tool.setuptools]
