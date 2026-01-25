@@ -92,9 +92,18 @@ conda activate tfbindformer
 pip install -r requirements.txt
 
 ```
+### 2. External Dependencies
+
+TFBindFormer relies on **Foldseek** to generate 3Di structural tokens from
+protein structures.
+
+Please install Foldseek separately following the instructions here:  
+https://github.com/steineggerlab/foldseek
+
+Ensure the `foldseek` executable is available in your `$PATH`.
 ---
 
-### 2. Download dataset
+### 3. Download dataset
 
 All DNA and transcription factor (TF) data used in this project are  
 publicly available on **Zenodo**.
@@ -104,14 +113,14 @@ following the structure described above.
 
 ---
 
-### 3. Generate 3Di structural tokens 
+### 4. Generate 3Di structural tokens 
 
 ```bash
 chmod +x scripts/generate_3di_tokens.sh
 scripts/generate_3di_tokens.sh <pdb_dir> <output_dir>
 ```
 
-### 4. Generate TF protein embeddings
+### 5. Generate TF protein embeddings
 
 ```bash
 nohup python scripts/extract_tf_embeddings.py \
@@ -121,7 +130,7 @@ nohup python scripts/extract_tf_embeddings.py \
   > extract_tf_embeddings.log 2>&1 &
 ```
 
-### 5. Train TFBindFormer
+### 6. Train TFBindFormer
 
 ```bash
 nohup python train.py \
@@ -143,7 +152,7 @@ nohup python train.py \
   > tfbind_train.log 2>&1 &
 ```
 
-### 6. Evaluation
+### 7. Evaluation
 
 ```bash
 nohup python eval.py \
