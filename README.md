@@ -95,13 +95,13 @@ pip install -e .
 ```
 ### 2. External Dependencies
 
-TFBindFormer relies on **Foldseek** to generate 3Di structural tokens from
-protein structures.
-
-Please install Foldseek separately following the instructions here:  
+TFBindFormer uses Foldseek-derived 3Di structural tokens to encode protein structural information. 
+The 3Di tokens used in this work are included in the released dataset. Users interested in recomputing 
+3Di representations from raw protein structures or applying the method to additional transcription factors may install Foldseek following the official documentation:
 https://github.com/steineggerlab/foldseek
 
 Ensure the `foldseek` executable is available in your `$PATH`.
+
 ---
 
 ### 3. Download dataset
