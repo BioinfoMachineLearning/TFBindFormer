@@ -128,7 +128,7 @@ chmod +x scripts/generate_3di_tokens.sh
 ./scripts/generate_3di_tokens.sh <pdb_dir> <output_dir>
 ```
 Arguments
-<pdb_dir>: Directory containing TF protein structure files in PDB format
+<pdb_dir>: Directory containing TF protein structure files in PDB format; 
 <output_dir>: Directory where generated 3Di token FASTA files will be saved
 
 Example
