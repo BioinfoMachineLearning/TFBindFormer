@@ -1,0 +1,21 @@
+name: tfbindformer
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python>=3.9
+  - pytorch
+  - pytorch-lightning
+  - numpy
+  - pandas
+  - matplotlib
+  - scikit-learn
+  - biopython
+  - tqdm
+  - sentencepiece
+  - pip
+  - pip:
+      - transformers
+      - wandb
+      - torchmetrics
