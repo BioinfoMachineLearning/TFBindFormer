@@ -185,18 +185,22 @@ This command loads the specified model checkpoint, runs evaluation on the test s
 
 ---
 
-## Model Customization (Advanced)
+## Hybrid Cross-Attention Module Configuration (Advanced)
 
-The TFBindFormer model architecture is defined in the following modules:
+The stacked Cross Attention Blocks illustrated above are implemented in:
 
-- **Top-level Lightning module:**  
-  `src/tfbindformer/model/lit_model.py`
+src/architectures/cross_attention_encoder.py
+src/architectures/binding_predictor.py
 
-- **Core binding predictor and attention blocks:**  
-  `src/tfbindformer/model/binding_predictor.py`  
-  `src/tfbindformer/model/cross_attention.py`
+The number of Cross Attention Blocks (k), as well as their internal configuration (hidden dimension, number of heads, dropout, etc.), can be adjusted by modifying the corresponding initialization parameters and module definitions in those files.
 
-Advanced users may adjust the number of layers, hidden dimensions, or attention heads by modifying the model configuration and initialization in these files.
+In particular:
+
+The depth of the hybrid cross-attention module controls how many cross-attention blocks are stacked sequentially.
+
+Each block models residue–nucleotide interactions via cross-attention, followed by feed-forward transformations.
+
+Advanced users may change the number of blocks or block-level hyperparameters to explore alternative model capacities or ablation variants.
 
 ---
 ## Citation
