@@ -120,7 +120,7 @@ Please download the dataset and place it under the TFBindFormer/ directory of th
 
 
 ### 4. Generate 3Di structural tokens 
-The 3Di tokens used in this study are included in the released dataset.
+The 3Di tokens used in this study are included in the released dataset(../data/tf_data/pdb_3Di_ss.fasta).
 To recompute 3Di tokens from protein structure files (e.g., PDB) or to generate 3Di representations for additional transcription factors, the following helper script is provided. Internally, this script runs Foldseek to convert protein structures into sequence-like 3Di tokens.
 
 ```bash
@@ -143,18 +143,18 @@ Example:
 
 
 ### 5. Generate TF protein embeddings
-TFBindFormer represents transcription factors using embeddings derived from amino acid sequences and 3Di structural tokens. The TF protein embeddings used in this study are included in the released dataset.
+TFBindFormer represents transcription factors using embeddings derived from amino acid sequences and 3Di structural tokens. The TF protein embeddings used in this study are included in the released dataset(../data/tf_data/tf_embeddings_512).
 
 To recompute TF protein embeddings from the provided amino acid sequences and 3Di tokens, or to generate embeddings for additional transcription factors, run:
 
 ```bash
 nohup python scripts/extract_tf_embeddings.py \
-  --aa_dir data/tf_data/tf_aa_sequence \
-  --di_fasta data/tf_data/3di_out/pdb_3Di_ss.fasta \
-  --out_dir data/tf_data/tf_embeddings \
+  --aa_dir ../data/tf_data/tf_sequence \
+  --di_fasta ../data/tf_data/pdb_3Di_ss.fasta \
+  --out_dir ../data/tf_data/tf_embeddings_512 \
   > extract_tf_embeddings.log 2>&1 &
 ```
-This command reads TF amino acid sequences from tf_aa_sequence, uses the corresponding 3Di token FASTA file, and writes the resulting protein embeddings to tf_embeddings.
+This command loads transcription factor amino-acid sequences from tf_sequence, integrates the corresponding precomputed 3Di structural token sequences, and outputs TF protein embeddings to tf_embeddings_512.
 
 
 ### 6. Train TFBindFormer
