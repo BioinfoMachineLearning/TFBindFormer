@@ -185,23 +185,23 @@ Description
 
 This command trains TFBindFormer using preprocessed genomic DNA inputs and pretrained TF protein embeddings. The model learns TF-conditioned DNA representations under extreme class imbalance.
 
-DNA sequence inputs are loaded from NumPy arrays (*_oneHot.npy)
+-DNA sequence inputs are loaded from NumPy arrays (*_oneHot.npy)
 
-Binding labels are loaded from corresponding label matrices (*_labels.npy)
+-Binding labels are loaded from corresponding label matrices (*_labels.npy)
 
-TF metadata is shared between training and validation splits
+-TF metadata is shared between training and validation splits
 
-Precomputed TF protein embeddings (AA + 3Di, 512-dim) are loaded from --embedding_dir
+-Precomputed TF protein embeddings (AA + 3Di, 512-dim) are loaded from --embedding_dir
 
-Training is performed with downsampled negatives (--neg_fraction)
+-Training is performed with downsampled negatives (--neg_fraction)
 
-Model checkpoints are written to checkpoints/tfbind_train
+-Model checkpoints are written to checkpoints/tfbind_train
 
-Logs are saved to tfbind_train.log
+-Logs are saved to tfbind_train.log
 
-Training metrics are tracked with Weights & Biases (wandb)
+-Training metrics are tracked with Weights & Biases (wandb)
 
-The job is launched with nohup to allow long-running background execution.
+-The job is launched with nohup to allow long-running background execution.
 
 ### 7. Evaluation
 The following command evaluates a trained TFBindFormer model on the test dataset using a saved checkpoint:
