@@ -92,7 +92,6 @@ git clone https://github.com/BioinfoMachineLearning/TFBindFormer.git
 cd TFBindFormer
 conda env create -f environment.yml
 conda activate tfbindformer
-pip install -e .
 ```
 ### 2. External Dependencies
 
