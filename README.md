@@ -107,9 +107,16 @@ Ensure the `foldseek` executable is available in your `$PATH`.
 
 All DNA sequence data and transcription factor (TF)–related data used in this project are publicly available on Zenodo:
 
-https://zenodo.org/records/18305751
+DOI: 10.5281/zenodo.18305750
 
-Please download the dataset and place it under the data/ directory of this repository, following the directory structure described above. The provided files include the preprocessed DNA inputs, corresponding labels and metadata, and the TF-related data required to reproduce the training and evaluation experiments.
+To download the dataset from the command line, run:
+
+```bash
+wget https://zenodo.org/api/records/18305751/files/data.tar.gz/content -O data.tar.gz
+tar -xzf data.tar.gz
+```
+
+Please download the dataset and place it under the TFBindFormer/ directory of this repository, following the directory structure described above. The provided files include the preprocessed DNA inputs, corresponding labels and metadata, and the TF-related data required to reproduce the training and evaluation experiments.
 
 
 ### 4. Generate 3Di structural tokens 
