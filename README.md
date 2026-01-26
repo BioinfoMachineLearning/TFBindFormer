@@ -106,22 +106,37 @@ Ensure the `foldseek` executable is available in your `$PATH`.
 
 ### 3. Download dataset
 
-All DNA and transcription factor (TF) data used in this project are  
-publicly available on **Zenodo**.
+All DNA sequence data and transcription factor (TF)–related data used in this project are publicly available on Zenodo:
 
-Please download the dataset and place it under the `data/` directory  
-following the structure described above.
+https://zenodo.org/records/18305751
+
+Please download the dataset and place it under the data/ directory of this repository, following the directory structure described above. The provided files include the preprocessed DNA inputs, corresponding labels and metadata, and the TF-related data required to reproduce the training and evaluation experiments.
 
 ---
 
 ### 4. Generate 3Di structural tokens 
+The 3Di tokens used in this study are included in the released dataset.
+To recompute 3Di tokens from protein structure files (e.g., PDB) or to generate 3Di representations for additional transcription factors, the following helper script is provided. Internally, this script runs Foldseek to convert protein structures into sequence-like 3Di tokens.
 
 ```bash
 chmod +x scripts/generate_3di_tokens.sh
-scripts/generate_3di_tokens.sh <pdb_dir> <output_dir>
+./scripts/generate_3di_tokens.sh <pdb_dir> <output_dir>
 ```
+Example:
+```bash
+./scripts/generate_3di_tokens.sh \
+  data/tf_data/tf_structure \
+  data/tf_data/3di_out
+```
+Here, <pdb_dir> contains the protein structure files for transcription factors, and <output_dir> specifies the directory where the generated 3Di token FASTA files will be written.
+
+---
+
 
 ### 5. Generate TF protein embeddings
+TFBindFormer represents transcription factors using embeddings derived from amino acid sequences and 3Di structural tokens. The TF protein embeddings used in this study are included in the released dataset.
+
+To recompute TF protein embeddings from the provided amino acid sequences and 3Di tokens, or to generate embeddings for additional transcription factors, run:
 
 ```bash
 nohup python scripts/extract_tf_embeddings.py \
@@ -130,6 +145,8 @@ nohup python scripts/extract_tf_embeddings.py \
   --out_dir data/tf_data/tf_embeddings \
   > extract_tf_embeddings.log 2>&1 &
 ```
+This command reads TF amino acid sequences from tf_aa_sequence, uses the corresponding 3Di token FASTA file, and writes the resulting protein embeddings to tf_embeddings.
+
 
 ### 6. Train TFBindFormer
 
