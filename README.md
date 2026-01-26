@@ -166,8 +166,8 @@ nohup python train.py \
   --train_metadata_tsv ../TFBindFormer/data/tf_data/metadata_tfbs.tsv \
   --val_dna_npy ../TFBindFormer/data/dna_data/val/valid_oneHot.npy \
   --val_labels_npy ../TFBindFormer/data/dna_data/val/valid_labels.npy \
-  --val_metadata_tsv /bml/ping/TFBindFormer/data/tf_data/metadata_tfbs.tsv \
-  --embedding_dir ../TFBindFormer/data/tf_data/tf_embeddings \
+  --val_metadata_tsv ../TFBindFormer/data/tf_data/metadata_tfbs.tsv \
+  --embedding_dir ../TFBindFormer/data/tf_data/tf_embeddings_512 \
   --epochs 20 \
   --batch_size 1024 \
   --num_workers 6 \
