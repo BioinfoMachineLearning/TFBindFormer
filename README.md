@@ -158,16 +158,18 @@ This command loads transcription factor amino-acid sequences from tf_sequence, i
 
 
 ### 6. Train TFBindFormer
-The following command trains TFBindFormer on the prepared DNA and transcription factor data:
+Run training from the scripts/ directory:
 ```bash
+cd TFBindFormer/scripts
+
 nohup python train.py \
-  --train_dna_npy ../TFBindFormer/data/dna_data/train/train_oneHot.npy \
-  --train_labels_npy ../TFBindFormer/data/dna_data/train/train_labels.npy \
-  --train_metadata_tsv ../TFBindFormer/data/tf_data/metadata_tfbs.tsv \
-  --val_dna_npy ../TFBindFormer/data/dna_data/val/valid_oneHot.npy \
-  --val_labels_npy ../TFBindFormer/data/dna_data/val/valid_labels.npy \
-  --val_metadata_tsv ../TFBindFormer/data/tf_data/metadata_tfbs.tsv \
-  --embedding_dir ../TFBindFormer/data/tf_data/tf_embeddings_512 \
+  --train_dna_npy ../data/dna_data/train/train_oneHot.npy \
+  --train_labels_npy ../data/dna_data/train/train_labels.npy \
+  --train_metadata_tsv ../data/tf_data/metadata_tfbs.tsv \
+  --val_dna_npy ../data/dna_data/val/valid_oneHot.npy \
+  --val_labels_npy ../data/dna_data/val/valid_labels.npy \
+  --val_metadata_tsv ../data/tf_data/metadata_tfbs.tsv \
+  --embedding_dir ../data/tf_data/tf_embeddings_512 \
   --epochs 20 \
   --batch_size 1024 \
   --num_workers 6 \
@@ -177,8 +179,29 @@ nohup python train.py \
   --run_name tfbind_train \
   --output_dir ./checkpoints/tfbind_train \
   > tfbind_train.log 2>&1 &
+
 ```
-This command trains the global TF–DNA binding prediction model and writes model checkpoints and logs to the specified output directory.
+Description
+
+This command trains TFBindFormer using preprocessed genomic DNA inputs and pretrained TF protein embeddings. The model learns TF-conditioned DNA representations under extreme class imbalance.
+
+DNA sequence inputs are loaded from NumPy arrays (*_oneHot.npy)
+
+Binding labels are loaded from corresponding label matrices (*_labels.npy)
+
+TF metadata is shared between training and validation splits
+
+Precomputed TF protein embeddings (AA + 3Di, 512-dim) are loaded from --embedding_dir
+
+Training is performed with downsampled negatives (--neg_fraction)
+
+Model checkpoints are written to checkpoints/tfbind_train
+
+Logs are saved to tfbind_train.log
+
+Training metrics are tracked with Weights & Biases (wandb)
+
+The job is launched with nohup to allow long-running background execution.
 
 ### 7. Evaluation
 The following command evaluates a trained TFBindFormer model on the test dataset using a saved checkpoint:
