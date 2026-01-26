@@ -90,8 +90,6 @@ TFBindFormer/
 conda env create -f environment.yml
 conda activate tfbindformer
 pip install -e .
-
-
 ```
 ### 2. External Dependencies
 
@@ -102,7 +100,6 @@ https://github.com/steineggerlab/foldseek
 
 Ensure the `foldseek` executable is available in your `$PATH`.
 
----
 
 ### 3. Download dataset
 
@@ -112,7 +109,6 @@ https://zenodo.org/records/18305751
 
 Please download the dataset and place it under the data/ directory of this repository, following the directory structure described above. The provided files include the preprocessed DNA inputs, corresponding labels and metadata, and the TF-related data required to reproduce the training and evaluation experiments.
 
----
 
 ### 4. Generate 3Di structural tokens 
 The 3Di tokens used in this study are included in the released dataset.
@@ -129,8 +125,6 @@ Example:
   data/tf_data/3di_out
 ```
 Here, <pdb_dir> contains the protein structure files for transcription factors, and <output_dir> specifies the directory where the generated 3Di token FASTA files will be written.
-
----
 
 
 ### 5. Generate TF protein embeddings
@@ -149,7 +143,7 @@ This command reads TF amino acid sequences from tf_aa_sequence, uses the corresp
 
 
 ### 6. Train TFBindFormer
-
+The following command trains TFBindFormer on the prepared DNA and transcription factor data:
 ```bash
 nohup python train.py \
   --train_dna_npy ../TFBindFormer/data/dna_data/train/train_oneHot.npy \
@@ -169,9 +163,10 @@ nohup python train.py \
   --output_dir ./checkpoints/tfbind_train \
   > tfbind_train.log 2>&1 &
 ```
+This command trains the global TF–DNA binding prediction model and writes model checkpoints and logs to the specified output directory.
 
 ### 7. Evaluation
-
+The following command evaluates a trained TFBindFormer model on the test dataset using a saved checkpoint:
 ```bash
 nohup python eval.py \
   --test_dna_npy ../TFBindFormer/data/dna_data/test/test_oneHot.npy \
@@ -184,18 +179,31 @@ nohup python eval.py \
   --run_name tfbind_eval \
   > tfbind_eval.log 2>&1 &
 ```
+This command loads the specified model checkpoint, runs evaluation on the test set, and reports performance metrics. When enabled, results are logged to Weights & Biases.
+
 ---
 ## Citation
 
-If you use TFBindFormer in your work, please cite the associated
-manuscript. Citation details will be updated upon publication.
+If you use TFBindFormer in your work, please cite the associated manuscript:
+```bash
+@unpublished{TFBindFormer,
+  title   = {TFBindFormer: A hybrid cross-attention Transformer for transcription factor--DNA binding prediction},
+  author  = {Liu, Ping and others},
+  note    = {Manuscript in preparation},
+  year    = {2026}
+}
+```
 
 ---
 
 ## Contact
 
-For questions or issues, please open an issue in this repository or
-contact the authors.
+For questions or issues related to the code or dataset, please open an
+issue in this repository. Additional inquiries may be directed to the
+corresponding author:
+
+Ping Liu  
+Email: pl5vw@missouri.edu
 
 ---
 
