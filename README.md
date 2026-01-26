@@ -87,9 +87,10 @@ TFBindFormer/
 ### 1. Create environment and install dependencies
 
 ```bash
-conda create -n tfbindformer python=3.9
+conda env create -f environment.yml
 conda activate tfbindformer
-pip install -r requirements.txt
+pip install -e .
+
 
 ```
 ### 2. External Dependencies
