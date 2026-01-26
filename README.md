@@ -184,6 +184,21 @@ nohup python eval.py \
 This command loads the specified model checkpoint, runs evaluation on the test set, and reports performance metrics. When enabled, results are logged to Weights & Biases.
 
 ---
+
+## Model Customization (Advanced)
+
+The TFBindFormer model architecture is defined in the following modules:
+
+- **Top-level Lightning module:**  
+  `src/tfbindformer/model/lit_model.py`
+
+- **Core binding predictor and attention blocks:**  
+  `src/tfbindformer/model/binding_predictor.py`  
+  `src/tfbindformer/model/cross_attention.py`
+
+Advanced users may adjust the number of layers, hidden dimensions, or attention heads by modifying the model configuration and initialization in these files.
+
+---
 ## Citation
 
 If you use TFBindFormer in your work, please cite the associated manuscript:
