@@ -120,7 +120,7 @@ Please download the dataset and place it under the TFBindFormer/ directory of th
 
 
 ### 4. Generate 3Di structural tokens 
-The 3Di tokens used in this study are included in the released dataset(../data/tf_data/pdb_3Di_ss.fasta).
+The 3Di tokens used in this study are included in the released dataset(../data/tf_data/3di_out/pdb_3Di_ss.fasta).
 To recompute 3Di tokens from protein structure files (e.g., PDB) or to generate 3Di representations for additional transcription factors, the following helper script is provided. Internally, this script runs Foldseek to convert protein structures into sequence-like 3Di tokens.
 
 ```bash
@@ -150,11 +150,11 @@ To recompute TF protein embeddings from the provided amino acid sequences and 3D
 ```bash
 nohup python scripts/extract_tf_embeddings.py \
   --aa_dir ../data/tf_data/tf_sequence \
-  --di_fasta ../data/tf_data/pdb_3Di_ss.fasta \
-  --out_dir ../data/tf_data/tf_embeddings_512 \
+  --di_fasta ../data/tf_data/3di_out/pdb_3Di_ss.fasta \
+  --out_dir ../data/tf_data/tf_embeddings \
   > extract_tf_embeddings.log 2>&1 &
 ```
-This command loads transcription factor amino-acid sequences from tf_sequence, integrates the corresponding precomputed 3Di structural token sequences, and outputs TF protein embeddings to tf_embeddings_512.
+This command loads transcription factor amino-acid sequences from tf_sequence, integrates the corresponding precomputed 3Di structural token sequences, and outputs TF protein embeddings to tf_embeddings.
 
 
 ### 6. Train TFBindFormer
@@ -169,7 +169,7 @@ nohup python train.py \
   --val_dna_npy ../data/dna_data/val/valid_oneHot.npy \
   --val_labels_npy ../data/dna_data/val/valid_labels.npy \
   --val_metadata_tsv ../data/tf_data/metadata_tfbs.tsv \
-  --embedding_dir ../data/tf_data/tf_embeddings_512 \
+  --embedding_dir ../data/tf_data/tf_embeddings \
   --epochs 20 \
   --batch_size 1024 \
   --num_workers 6 \
@@ -188,7 +188,7 @@ This command trains TFBindFormer using preprocessed genomic DNA inputs and pretr
 - DNA sequence inputs are loaded from NumPy arrays (`*_oneHot.npy`)
 - Binding labels are loaded from corresponding label matrices (`*_labels.npy`)
 - TF metadata is shared between training and validation splits
-- Precomputed TF protein embeddings (AA + 3Di, 512-dim) are loaded from `--embedding_dir`
+- Precomputed TF protein embeddings are loaded from `--embedding_dir`
 - Training is performed with downsampled negatives (`--neg_fraction`)
 - Model checkpoints are written to `checkpoints/tfbind_train`
 - Logs are saved to `tfbind_train.log`
@@ -203,7 +203,7 @@ nohup python eval.py \
   --test_dna_npy ../TFBindFormer/data/dna_data/test/test_oneHot.npy \
   --test_labels_npy ../TFBindFormer/data/dna_data/test/test_labels.npy \
   --test_metadata_tsv ../TFBindFormer/data/tf_data/metadata_tfbs.tsv \
-  --embedding_dir ../TFBindFormer/data/tf_data/tf_embeddings_512 \
+  --embedding_dir ../TFBindFormer/data/tf_data/tf_embeddings \
   --ckpt_path ../checkpoints/---.ckpt \
   --batch_size 1024 \
   --wandb_project tfbind_eval \
