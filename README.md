@@ -201,6 +201,8 @@ This command trains TFBindFormer using preprocessed genomic DNA inputs and pretr
 ### 7. Evaluation
 The following command evaluates a trained TFBindFormer model on the test dataset using a saved checkpoint:
 ```bash
+cd TFBindFormer/scripts
+
 nohup python eval.py \
   --test_dna_npy ../TFBindFormer/data/dna_data/test/test_oneHot.npy \
   --test_labels_npy ../TFBindFormer/data/dna_data/test/test_labels.npy \
