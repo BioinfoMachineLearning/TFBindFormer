@@ -156,10 +156,13 @@ TFBindFormer represents transcription factors using embeddings derived from amin
 To recompute TF protein embeddings from the provided amino acid sequences and 3Di tokens, or to generate embeddings for additional transcription factors, run:
 
 ```bash
+pwd
+# .../TFBindFormer
+
 nohup python scripts/extract_tf_embeddings.py \
-  --aa_dir ../data/tf_data/tf_sequence \
-  --di_fasta ../data/tf_data/3di_out/pdb_3Di_ss.fasta \
-  --out_dir ../data/tf_data/tf_embeddings \
+  --aa_dir /data/tf_data/tf_sequence \
+  --di_fasta /data/tf_data/3di_out/pdb_3Di_ss.fasta \
+  --out_dir /data/tf_data/tf_embeddings \
   > extract_tf_embeddings.log 2>&1 &
 ```
 This command loads transcription factor amino-acid sequences from tf_sequence, integrates the corresponding precomputed 3Di structural token sequences, and outputs TF protein embeddings to tf_embeddings.
