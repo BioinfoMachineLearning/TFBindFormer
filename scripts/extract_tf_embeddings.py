@@ -31,7 +31,7 @@ def embedding_features(seq_1d, seq_3di, device):
         "<fold2AA> " + seq_3di,
     ]
 
-    ids = tokenizer.batch_encode_plus(
+    ids = tokenizer(
         input_seqs,
         add_special_tokens=True,
         padding="longest",
