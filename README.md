@@ -126,6 +126,8 @@ The 3Di tokens used in this study are included in the released dataset(../data/t
 To recompute 3Di tokens from protein structure files (e.g., PDB) or to generate 3Di representations for additional transcription factors, the following helper script is provided. Internally, this script runs Foldseek to convert protein structures into sequence-like 3Di tokens.
 
 ```bash
+cd TFBindFormer
+
 chmod +x scripts/generate_3di_tokens.sh
 ./scripts/generate_3di_tokens.sh <pdb_dir> <output_dir>
 ```
@@ -138,9 +140,13 @@ Arguments:
 Example:
 
 ```bash
+pwd
+# .../TFBindFormer
+
 ./scripts/generate_3di_tokens.sh \
-  ../TFBindFormer/data/tf_data/tf_structure \
-  ../TFBindFormer/data/tf_data/3di_out
+  data/tf_data/tf_structure \
+  data/tf_data/3di_out
+
 ```
 
 
