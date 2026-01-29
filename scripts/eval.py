@@ -87,7 +87,10 @@ def main():
     # Load model checkpoint
     # ----------------------------
     print(f"[INFO] Loading model from: {args.ckpt_path}")
-    model = LitDNABindingModel.load_from_checkpoint(args.ckpt_path)
+    model = LitDNABindingModel.load_from_checkpoint(
+    args.ckpt_path,
+    weights_only=False
+    )
     model.eval()   # ensures dropout OFF
 
     # ----------------------------
