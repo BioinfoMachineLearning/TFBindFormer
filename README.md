@@ -107,12 +107,13 @@ Ensure the `foldseek` executable is available in your `$PATH`.
 
 All DNA sequence data and transcription factor (TF)–related data used in this project are publicly available on Zenodo:
 
-DOI: 10.5281/zenodo.18305750
+DOI: 10.5281/zenodo.18362288
+URL: https://doi.org/10.5281/zenodo.18362288
 
 To download the dataset from the command line, run:
 
 ```bash
-wget https://zenodo.org/api/records/18305751/files/data.tar.gz/content -O data.tar.gz
+wget -c https://zenodo.org/api/records/18362288/files/data.tar.gz/content -O data.tar.gz
 tar -xzf data.tar.gz
 ```
 
