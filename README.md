@@ -204,10 +204,10 @@ The following command evaluates a trained TFBindFormer model on the test dataset
 cd TFBindFormer/scripts
 
 nohup python eval.py \
-  --test_dna_npy ../TFBindFormer/data/dna_data/test/test_oneHot.npy \
-  --test_labels_npy ../TFBindFormer/data/dna_data/test/test_labels.npy \
-  --test_metadata_tsv ../TFBindFormer/data/tf_data/metadata_tfbs.tsv \
-  --embedding_dir ../TFBindFormer/data/tf_data/tf_embeddings \
+  --test_dna_npy ../data/dna_data/test/test_oneHot.npy \
+  --test_labels_npy ../data/dna_data/test/test_labels.npy \
+  --test_metadata_tsv ../data/tf_data/metadata_tfbs.tsv \
+  --embedding_dir ../data/tf_data/tf_embeddings \
   --ckpt_path ../checkpoints/---.ckpt \
   --batch_size 1024 \
   --wandb_project tfbind_eval \
