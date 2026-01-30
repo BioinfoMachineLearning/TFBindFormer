@@ -52,10 +52,17 @@ TFBindFormer/
 │   │   ├── val/
 │   │   └── test/
 │   └── tf_data/
-│       ├── tf_aa_sequence/
+│       ├── tf_sequence/
 │       ├── tf_structure/
+│       ├── 3di_out/
+│       ├── tf_embeddings/
 │       └── metadata_tfbs.tsv
-│
+├── analysis/
+│   ├── ablation/
+│   ├── attention_map/
+│   ├── data_distribution/
+│  
+├── figures/
 ├── scripts/
 │   ├── train.py
 │   ├── eval.py
@@ -71,8 +78,9 @@ TFBindFormer/
 │   ├── model.py
 │   └── utils.py
 │
-├── requirements.txt
-└── README.md
+├── LICENSE
+├── README.md
+└── environment.yml
 ```
 
 - **data/**: DNA sequence data, TF protein data, and metadata  
