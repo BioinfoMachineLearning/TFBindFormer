@@ -60,7 +60,7 @@ TFBindFormer/
 ├── analysis/
 │   ├── ablation/
 │   ├── attention_map/
-│   ├── data_distribution/
+│   └── data_distribution/
 │  
 ├── figures/
 ├── scripts/
@@ -84,10 +84,18 @@ TFBindFormer/
 ```
 
 - **data/**: DNA sequence data, TF protein data, and metadata  
+  Download from https://doi.org/10.5281/zenodo.18362288
+
 - **scripts/**: Training, evaluation, and preprocessing scripts  
+
+- **analysis/**: Post-training analyses, including ablation studies, attention map visualization, and data distribution analysis  
+
 - **src/architectures/**: Core model components and attention modules  
+
 - **src/model.py**: TFBindFormer model wrapper  
-- **src/utils.py**: Shared utilities and helper functions
+
+- **src/utils.py**: Shared utilities and helper functions  
+
 
 ---
 
@@ -240,6 +248,77 @@ nohup python eval.py \
 This command loads the specified model checkpoint, runs evaluation on the test set, and reports performance metrics. When enabled, results are logged to Weights & Biases.
 
 ---
+
+
+## Analysis
+
+Post-training analyses are organized under the `analysis/` directory to
+evaluate model design choices, interpret learned interactions, and
+characterize data properties.
+
+### Ablation Studies (`analysis/ablation/`)
+
+This directory contains scripts for systematic ablation of transcription
+factor protein representations and model components:
+
+- `aaOnlyEmbedder.py`  
+  Evaluates model performance using amino-acid sequence embeddings only.
+
+- `3diOnlyEmbedder.py`  
+  Evaluates model performance using structure-derived 3Di embeddings only.
+
+- `protst5_embedder.py`  
+  Baseline embedding pipeline using combined amino-acid and 3Di
+  representations from ProtST5.
+
+- `ablation_figure.py`  
+  Generates summary figures comparing ablation results across embedding
+  variants.
+
+These experiments quantify the relative contribution of sequence and
+structure information to TF–DNA binding prediction performance.
+
+---
+
+### Attention Map Analysis (`analysis/attention_map/`)
+
+Scripts for extracting and visualizing learned cross-attention patterns:
+
+- `get_att_weights.py`  
+  Extracts residue–nucleotide cross-attention weights from trained models.
+
+- `1dHeatMap.py`  
+  Generates one-dimensional heatmaps illustrating attention intensity
+  across TF residues or DNA positions.
+
+These analyses enable interpretation of residue–nucleotide interaction
+preferences learned by the hybrid cross-attention module.
+
+---
+
+### Data Distribution Analysis (`analysis/data_distribution/`)
+
+This directory contains scripts for analyzing the distribution of positive
+genomic bins across transcription factors in different dataset splits:
+
+- `plot_train.py`  
+  Generates violin plots with embedded boxplots showing the distribution
+  of positive genomic bins per transcription factor in the training set.
+
+- `plot_val.py`  
+  Generates analogous distribution plots for the validation set.
+
+- `plot_test.py`  
+  Generates analogous distribution plots for the test set.
+
+- `counts_labels.py`  
+  Computes label counts and summary statistics used in the distribution
+  analyses.
+
+These analyses characterize inter-TF variability and class imbalance
+across training, validation, and test splits.
+
+
 
 ## Hybrid Cross-Attention Module Configuration (Advanced)
 
