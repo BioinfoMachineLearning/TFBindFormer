@@ -256,7 +256,7 @@ Post-training analyses are organized under the `analysis/` directory to
 evaluate model design choices, interpret learned interactions, and
 characterize data properties.
 
-### Ablation Studies (`analysis/ablation/`)
+### 1. Ablation Studies (`analysis/ablation/`)
 
 This directory contains scripts for systematic ablation of transcription
 factor protein representations and model components:
@@ -279,7 +279,7 @@ These experiments quantify the relative contribution of sequence and
 structure information to TF–DNA binding prediction performance.
 
 
-### Attention Map Analysis (`analysis/attention_map/`)
+### 2. Attention Map Analysis (`analysis/attention_map/`)
 
 Scripts for extracting and visualizing learned cross-attention patterns:
 
@@ -295,7 +295,7 @@ preferences learned by the hybrid cross-attention module.
 
 
 
-### Data Distribution Analysis (`analysis/data_distribution/`)
+### 3. Data Distribution Analysis (`analysis/data_distribution/`)
 
 This directory contains scripts for analyzing the distribution of positive
 genomic bins across transcription factors in different dataset splits:
