@@ -278,7 +278,6 @@ factor protein representations and model components:
 These experiments quantify the relative contribution of sequence and
 structure information to TF–DNA binding prediction performance.
 
----
 
 ### Attention Map Analysis (`analysis/attention_map/`)
 
@@ -294,7 +293,7 @@ Scripts for extracting and visualizing learned cross-attention patterns:
 These analyses enable interpretation of residue–nucleotide interaction
 preferences learned by the hybrid cross-attention module.
 
----
+
 
 ### Data Distribution Analysis (`analysis/data_distribution/`)
 
@@ -319,7 +318,7 @@ These analyses characterize inter-TF variability and class imbalance
 across training, validation, and test splits.
 
 
-
+---
 ## Hybrid Cross-Attention Module Configuration (Advanced)
 
 The stacked Cross Attention Blocks illustrated above are implemented in:
