@@ -114,6 +114,9 @@ URL: https://doi.org/10.5281/zenodo.18362288
 To download the dataset from the command line, run:
 
 ```bash
+pwd
+# .../TFBindFormer
+
 wget -c https://zenodo.org/api/records/18362288/files/data.tar.gz/content -O data.tar.gz
 tar -xzf data.tar.gz
 ```
@@ -126,7 +129,8 @@ The 3Di tokens used in this study are included in the released dataset(../data/t
 To recompute 3Di tokens from protein structure files (e.g., PDB) or to generate 3Di representations for additional transcription factors, the following helper script is provided. Internally, this script runs Foldseek to convert protein structures into sequence-like 3Di tokens.
 
 ```bash
-cd TFBindFormer
+pwd
+# .../TFBindFormer
 
 chmod +x scripts/generate_3di_tokens.sh
 ./scripts/generate_3di_tokens.sh <pdb_dir> <output_dir>
@@ -171,7 +175,8 @@ This command loads transcription factor amino-acid sequences from tf_sequence, i
 ### 6. Train TFBindFormer
 Run training from the scripts/ directory:
 ```bash
-cd TFBindFormer/scripts
+pwd
+# .../TFBindFormer/scripts
 
 nohup python train.py \
   --train_dna_npy ../data/dna_data/train/train_oneHot.npy \
@@ -210,7 +215,8 @@ This command trains TFBindFormer using preprocessed genomic DNA inputs and pretr
 ### 7. Evaluation
 The following command evaluates a trained TFBindFormer model on the test dataset using a saved checkpoint:
 ```bash
-cd TFBindFormer/scripts
+pwd
+# .../TFBindFormer/scripts
 
 nohup python eval.py \
   --test_dna_npy ../data/dna_data/test/test_oneHot.npy \
