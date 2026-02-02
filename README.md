@@ -252,9 +252,8 @@ This command loads the specified model checkpoint, runs evaluation on the test s
 
 ## Analysis
 
-Post-training analyses are organized under the `analysis/` directory to
-evaluate model design choices, interpret learned interactions, and
-characterize data properties.
+Ablation studies, post-hoc attention map visualization and dataset distribution analysis are organized under the `analysis/` directory to
+evaluate model design choices, interpret learned interactions, and characterize data properties.
 
 ### 1. Ablation Studies (`analysis/ablation/`)
 
