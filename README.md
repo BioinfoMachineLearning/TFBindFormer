@@ -343,7 +343,7 @@ If you use TFBindFormer in your work, please cite the associated manuscript:
 @unpublished{TFBindFormer,
   title   = {TFBindFormer: A hybrid cross-attention Transformer for transcription factor--DNA binding prediction},
   author  = {Liu, Ping and others},
-  note    = {Manuscript in preparation},
+  note    = {Accepted for oral presentation at the 14th International Conference on Intelligent Biology and Medicine (ICIBM 2026)},
   year    = {2026}
 }
 ```
