@@ -9,6 +9,13 @@ from src.architectures.tbinet_dna_encoder import TBiNetDNAEncoder200
 from src.architectures.cross_attention_encoder import HybridCrossAttentionEncoder
 from src.architectures.cross_attention_encoder import ProteinReduceVariable
 
+def reverse_complement_onehot(dna):
+    """
+    dna: torch.Tensor, shape (B, L, 4)
+    column order: A, G, C, T
+    """
+    return torch.flip(dna, dims=[1])[:, :, [3, 2, 1, 0]]
+
 
 # ===========================================================
 # Position-Weighted Pooling over DNA
@@ -72,12 +79,15 @@ class DNABindingPredictor(nn.Module):
 
     def __init__(
         self,
-        protein_in_dim: int = 512,
+        protein_in_dim: int = 1024,
         d_model: int = 128,
         nhead: int = 8,
         dropout: float = 0.3,
         num_layers: int = 3,
         num_bidir_layers: int = 2,
+        use_cell_type: bool = False,
+        num_cell_types: int = 0,
+        cell_type_dim: int = 16,
     ):
         super().__init__()
 
@@ -92,13 +102,15 @@ class DNABindingPredictor(nn.Module):
             add_posnorm=True,
         )
 
-        # 2) protein reduction (pdb length → =200)
+        # 2) protein reduction
+ 
         self.protein_reduce = ProteinReduceVariable(
             protein_in_dim=protein_in_dim,
             d_model=d_model,
             target_len=200,
             nhead=nhead,
             dropout=dropout,
+            reduce_long=True,
         )
 
         # 3) cross attention encoder
@@ -113,11 +125,21 @@ class DNABindingPredictor(nn.Module):
 
         # 4) DNA pooling
         self.pool = PositionWeightedPool(d_model=d_model)
+        self.use_cell_type = use_cell_type
+        self.cell_type_dim = cell_type_dim
+
+        if self.use_cell_type:
+            assert num_cell_types > 0, "num_cell_types must be > 0 when use_cell_type=True"
+            self.cell_type_embedding = nn.Embedding(num_cell_types, cell_type_dim)
+            classifier_in_dim = d_model + cell_type_dim
+        else:
+            self.cell_type_embedding = None
+            classifier_in_dim = d_model
 
         # 5) classifier
         self.classifier = nn.Sequential(
-            nn.LayerNorm(d_model),
-            nn.Linear(d_model, d_model // 2),
+            nn.LayerNorm(classifier_in_dim),
+            nn.Linear(classifier_in_dim, d_model // 2),
             nn.ReLU(),
             nn.Dropout(dropout),
             nn.Linear(d_model // 2, 1),
@@ -125,16 +147,25 @@ class DNABindingPredictor(nn.Module):
 
     def forward(
         self,
-        dna_onehot: torch.Tensor,          # (B,1000,4)
-        protein_emb: torch.Tensor,         # (B,Lp,512)
-        protein_mask: torch.Tensor | None = None,  # (B,Lp) bool or None
-        dna_mask: torch.Tensor | None = None,      # (B,200) bool or None (optional)
+        dna_onehot: torch.Tensor,
+        protein_emb: torch.Tensor,
+        protein_mask: torch.Tensor | None = None,
+        dna_mask: torch.Tensor | None = None,
+        cell_type_id: torch.Tensor | None = None,
         return_attention: bool = False,
     ) -> torch.Tensor:
 
-        # ----- 1. Encode DNA -----
-        dna_embed = self.dna_encoder(dna_onehot)   # (B,L_dna=200,d_model)
+        dna_rc = reverse_complement_onehot(dna_onehot)
 
+        # ----- 1. Encode DNA -----
+        dna_rep_fwd = self.dna_encoder(dna_onehot)
+        dna_rep_rc = self.dna_encoder(dna_rc)
+
+        # align RC embedding back to original forward coordinate
+        dna_rep_rc = torch.flip(dna_rep_rc, dims=[1])
+
+        #dna_rep = 0.5 * (dna_rep_fwd + dna_rep_rc)  # (B,L_dna=200,d_model)
+        dna_rep = torch.maximum(dna_rep_fwd, dna_rep_rc)
         # ----- 2. Reduce / project protein -----
         protein_rep, prot_mask = self.protein_reduce(
             protein_emb, protein_mask
@@ -145,7 +176,7 @@ class DNABindingPredictor(nn.Module):
         if return_attention:
             dna_out, prot_out, attn = self.cross_encoder(
                 protein=protein_rep,
-                dna=dna_embed,
+                dna=dna_rep,
                 protein_mask=prot_mask,
                 dna_mask=dna_mask,
                 return_both=True,
@@ -154,7 +185,7 @@ class DNABindingPredictor(nn.Module):
         else:
             dna_out, prot_out = self.cross_encoder(
                 protein=protein_rep,
-                dna=dna_embed,
+                dna=dna_rep,
                 protein_mask=prot_mask,
                 dna_mask=dna_mask,
                 return_both=True,
@@ -166,9 +197,15 @@ class DNABindingPredictor(nn.Module):
 
         # ----- 4. Position-weighted pooling over DNA -----
         pooled = self.pool(dna_out, mask=dna_mask)   # (B,d_model)
+        if self.use_cell_type:
+            if cell_type_id is None:
+                raise ValueError("cell_type_id must be provided when use_cell_type=True")
+
+            cell_emb = self.cell_type_embedding(cell_type_id)  # (B, cell_type_dim)
+            pooled = torch.cat([pooled, cell_emb], dim=-1)
 
         # ----- 5. Classifier -----
-        logits = self.classifier(pooled).squeeze(-1)  # (B,)
+        logits = self.classifier(pooled).squeeze(-1)
 
         if return_attention:
             return logits, attn

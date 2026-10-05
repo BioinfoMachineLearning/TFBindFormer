@@ -69,22 +69,37 @@ class LitDNABindingModel(pl.LightningModule):
 
     def __init__(
         self,
-        protein_in_dim=512,
+        protein_in_dim=1024,
         d_model=128,
         dropout=0.3,
         lr=1e-4,
         weight_decay=1e-5,
-        warmup_steps=1000,     # STEP-BASED WARMUP
-        total_steps=None,      # COMPUTED AUTOMATICALLY IF None
+        warmup_steps=1000,
+        total_steps=None,
+        use_cell_type=True,
+        num_cell_types=0,
+        cell_type_dim=16,
+        fixed_tf_embs=None,
+        fixed_tf_masks=None,
+        output_dir="./",
+        
     ):
         super().__init__()
-        self.save_hyperparameters()
+        self.save_hyperparameters(ignore=["fixed_tf_embs", "fixed_tf_masks"])
 
         self.model = DNABindingPredictor(
             protein_in_dim=protein_in_dim,
             d_model=d_model,
             dropout=dropout,
+            use_cell_type=use_cell_type,
+            num_cell_types=num_cell_types,
+            cell_type_dim=cell_type_dim,
         )
+        if fixed_tf_embs is None or fixed_tf_masks is None:
+            raise ValueError("fixed_tf_embs and fixed_tf_masks must be provided.")
+
+        self.register_buffer("fixed_tf_embs", fixed_tf_embs, persistent=False)
+        self.register_buffer("fixed_tf_masks", fixed_tf_masks, persistent=False)
 
         self.lr = lr
         self.weight_decay = weight_decay
@@ -99,23 +114,20 @@ class LitDNABindingModel(pl.LightningModule):
 
         self.test_probs = []
         self.test_targets = []
+        self.output_dir = output_dir
 
         self.best_threshold = None
 
 
+    def _get_proteins_by_idx(self, tf_idx, device):
+        tf_idx = tf_idx.to(device)
+
+        prot = self.fixed_tf_embs[tf_idx].to(device)
+        mask = self.fixed_tf_masks[tf_idx].to(device)
+
+        return prot, mask
+
     # ----------------------------------------------------------
-    def _pad_proteins(self, emb_list, device):
-        cleaned = [t.squeeze(0) if t.ndim == 3 else t for t in emb_list]
-        B = len(cleaned)
-        Lmax = max(t.shape[0] for t in cleaned)
-        D = cleaned[0].shape[1]
-        out = torch.zeros((B, Lmax, D), device=device)
-        mask = torch.ones((B, Lmax), dtype=torch.bool, device=device)
-        for i, t in enumerate(cleaned):
-            L = t.shape[0]
-            out[i, :L] = t
-            mask[i, :L] = False
-        return out, mask
 
 
     # ----------------------------------------------------------
@@ -146,9 +158,17 @@ class LitDNABindingModel(pl.LightningModule):
 
     # ----------------------------------------------------------
     def training_step(self, batch, batch_idx):
-        dna, tf_embs, labels, tf_idx = batch
-        prot, mask = self._pad_proteins(tf_embs, dna.device)
-        logits = self.model(dna, prot, protein_mask=mask).squeeze(-1)
+        dna, labels, tf_idx, cell_type_id = batch
+
+        prot, mask = self._get_proteins_by_idx(tf_idx, dna.device)
+
+        logits = self.model(
+            dna,
+            prot,
+            protein_mask=mask,
+            cell_type_id=cell_type_id.to(dna.device),
+        ).squeeze(-1)
+
         loss = self.loss_fn(logits, labels.float())
         self.log("train/loss", loss, on_epoch=True, batch_size=dna.size(0))
         return loss
@@ -156,17 +176,24 @@ class LitDNABindingModel(pl.LightningModule):
 
     # ----------------------------------------------------------
     def validation_step(self, batch, batch_idx):
-        dna, tf_embs, labels, tf_idx = batch
-        prot, mask = self._pad_proteins(tf_embs, dna.device)
-        logits = self.model(dna, prot, protein_mask=mask).squeeze(-1)
+        dna, labels, tf_idx, cell_type_id = batch
+
+        prot, mask = self._get_proteins_by_idx(tf_idx, dna.device)
+
+        logits = self.model(
+            dna,
+            prot,
+            protein_mask=mask,
+            cell_type_id=cell_type_id.to(dna.device),
+        ).squeeze(-1)
 
         loss = self.loss_fn(logits, labels.float())
         self.log("val/loss", loss, on_epoch=True, prog_bar=True, batch_size=dna.size(0))
 
         self.val_logits.append(torch.sigmoid(logits).detach().cpu())
         self.val_targets.append(labels.detach().cpu())
-        return loss
 
+        return loss
 
     # ----------------------------------------------------------
     # VALIDATION — threshold sweep + PR/ROC logging
@@ -235,26 +262,25 @@ class LitDNABindingModel(pl.LightningModule):
 # TEST
 # ----------------------------------------------------------
     def test_step(self, batch, batch_idx):
-        dna, tf_embs, labels, tf_idx = batch
+        dna, labels, tf_idx, cell_type_id = batch
 
-        # pad proteins
-        prot, mask = self._pad_proteins(tf_embs, dna.device)
+        prot, mask = self._get_proteins_by_idx(tf_idx, dna.device)
 
-        # forward
-        logits = self.model(dna, prot, protein_mask=mask).squeeze(-1)
+        logits = self.model(
+            dna,
+            prot,
+            protein_mask=mask,
+            cell_type_id=cell_type_id.to(dna.device),
+        ).squeeze(-1)
 
-        # probabilities
         probs = torch.sigmoid(logits)
 
-        # store
         self.test_probs.append(probs.detach().cpu())
         self.test_targets.append(labels.detach().cpu())
 
-        # loss
         loss = self.loss_fn(logits, labels.float())
-
-        # log
         self.log("test/loss", loss, on_step=False, on_epoch=True)
+
         return loss
 
     
@@ -263,7 +289,7 @@ class LitDNABindingModel(pl.LightningModule):
     def on_test_epoch_end(self):
         
 
-        parent_dir = "eval_out"
+        parent_dir = self.output_dir
         data_dir = os.path.join(parent_dir, "metrics_data")
         out_dir  = os.path.join(parent_dir, "eval_results")
 

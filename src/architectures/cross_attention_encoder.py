@@ -8,35 +8,41 @@ import math
 # ===========================================================
 class ProteinReduceVariable(nn.Module):
     """
-    If Lp <= target_len:
-        project to d_model and keep length Lp: (B, Lp, d_model)
-    If Lp > target_len:
-        attention-reduce to target_len:       (B, target_len, d_model)
+    Protein projection/reduction module.
 
-    Inputs:
-        protein_emb:  (B, Lp, protein_in_dim)
-        protein_mask: (B, Lp) bool, True = PAD (optional)
+    For the new efficient workflow:
+        Input fixed TF embeddings:
+            protein_emb:  (B, 200, protein_in_dim)
+            protein_mask: (B, 200), True = PAD
 
-    Outputs:
-        protein_rep:  (B, L_prot_out, d_model), where L_prot_out <= target_len
-        prot_mask:    (B, L_prot_out) or None
+        Output:
+            protein_rep:  (B, 200, d_model)
+            prot_mask:    (B, 200)
+
+    If an input is longer than target_len, it can still reduce by attention.
+    But for your current fixed200 embeddings, it will only project and keep mask.
     """
 
     def __init__(
         self,
-        protein_in_dim: int = 512,
+        protein_in_dim: int = 1024,
         d_model: int = 128,
         target_len: int = 200,
         nhead: int = 8,
         dropout: float = 0.1,
+        reduce_long: bool = True,
     ):
         super().__init__()
         self.target_len = target_len
         self.d_model = d_model
+        self.reduce_long = reduce_long
 
-        # 512 -> 256 -> 128 projection with dropout
+        # 1024 -> 256 -> 128 projection
         self.input_proj = nn.Sequential(
-            nn.Linear(protein_in_dim, 256),
+            nn.Linear(protein_in_dim, 512),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(512, 256),
             nn.GELU(),
             nn.Dropout(dropout),
             nn.Linear(256, d_model),
@@ -44,7 +50,7 @@ class ProteinReduceVariable(nn.Module):
             nn.Dropout(dropout),
         )
 
-        # learned queries for reduction when Lp > target_len
+        # Used only if Lp > target_len
         self.query = nn.Parameter(
             torch.randn(1, target_len, d_model) * (d_model ** -0.5)
         )
@@ -65,30 +71,41 @@ class ProteinReduceVariable(nn.Module):
 
     def forward(
         self,
-        protein_emb: torch.Tensor,         # (B,Lp,512)
-        protein_mask: torch.Tensor | None = None,  # (B,Lp) or None
+        protein_emb: torch.Tensor,                  # (B, Lp, protein_in_dim)
+        protein_mask: torch.Tensor | None = None,   # (B, Lp), True = PAD
     ) -> tuple[torch.Tensor, torch.Tensor | None]:
 
-        # Project to d_model
-        protein_emb = self.input_proj(protein_emb)   # (B,Lp,128)
+        # Project input embedding dimension to d_model
+        protein_emb = self.input_proj(protein_emb)  # (B, Lp, d_model)
         B, Lp, D = protein_emb.shape
 
+        # --------------------------------------------------
+        # Case 1: already fixed/reduced to target_len
+        # Your current workflow: Lp = 200
+        # Keep protein positions and keep mask.
+        # --------------------------------------------------
+        if Lp <= self.target_len or not self.reduce_long:
+            return protein_emb, protein_mask
 
-        # --- Case 2: long protein, reduce to target_len via attention ---
-        q = self.query.expand(B, -1, -1)  # (B,target_len,128)
+        # --------------------------------------------------
+        # Case 2: still longer than target_len
+        # Attention-reduce to target_len.
+        # After reduction, all output query positions are real latent tokens.
+        # --------------------------------------------------
+        q = self.query.expand(B, -1, -1)  # (B, target_len, d_model)
 
         out, _ = self.attn(
             query=q,
             key=protein_emb,
             value=protein_emb,
-            key_padding_mask=protein_mask,  # (B,Lp) or None
+            key_padding_mask=protein_mask,
             need_weights=False,
         )
-        out = self.norm(out + self.ff(out))  # (B,target_len,128)
 
-        # after reduction, all positions are "real" latent tokens → no pad
-        return out, None   # (B,target_len,128), mask=None
+        out = self.norm(out + self.ff(out))
 
+        # After learned attention reduction, output has no padding positions
+        return out, None
 
 # ===========================================================
 # FFN block used inside cross-attention encoder
