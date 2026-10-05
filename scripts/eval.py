@@ -1038,57 +1038,57 @@ if __name__ == "__main__":
 #for seen-TF test
 
 '''
-mkdir -p /bml/ping/tfbind_review/tfbind_csbj/results/seed_42/seenTF_eval
+mkdir -p ....../results/seed_42/seenTF_eval
 
 CUDA_VISIBLE_DEVICES=1 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
 nohup python eval.py \
-  --ckpt_path /bml/ping/tfbind_review/tfbind_csbj/results/ckpts/epoch=16-val/pr_auc=0.5694-val/loss=0.1102.ckpt \
-  --test_dna_npy /bml/ping/tfbind_review/tfbind_csbj/data/dna_data/test/seen/test_data.npy \
-  --test_labels_npy /bml/ping/tfbind_review/tfbind_csbj/data/dna_data/test/seen/test_labels.npy \
-  --test_metadata_tsv /bml/ping/tfbind_review/tfbind_csbj/data/metadata/seen_tf_metadata.tsv \
-  --fixed_tf_embs_pt /bml/ping/tfbind_review/tfbind_csbj/data/tf_data/fixed_length_200/seen_tf/fixed_tf_embs.pt \
-  --fixed_tf_masks_pt /bml/ping/tfbind_review/tfbind_csbj/data/tf_data/fixed_length_200/seen_tf/fixed_tf_masks.pt \
-  --test_pairs_file /bml/ping/tfbind_review/tfbind_csbj/data/cached_pairs/seed42/seentf/test_pairs.npy \
+  --ckpt_path ....../results/ckpts/epoch=16-val/pr_auc=0.5694-val/loss=0.1102.ckpt \
+  --test_dna_npy ....../data/dna_data/test/seen/test_data.npy \
+  --test_labels_npy ....../data/dna_data/test/seen/test_labels.npy \
+  --test_metadata_tsv ....../data/metadata/seen_tf_metadata.tsv \
+  --fixed_tf_embs_pt ....../data/tf_data/fixed_length_200/seen_tf/fixed_tf_embs.pt \
+  --fixed_tf_masks_pt ....../data/tf_data/fixed_length_200/seen_tf/fixed_tf_masks.pt \
+  --test_pairs_file ....../data/cached_pairs/seed42/seentf/test_pairs.npy \
   --use_cell_type \
   --cell_type_dim 16 \
-  --cell_type_ids_npy /bml/ping/tfbind_review/tfbind_csbj/data/metadata/seen_cell_type_ids.npy \
+  --cell_type_ids_npy ....../data/metadata/seen_cell_type_ids.npy \
   --protein_in_dim 1024 \
   --batch_size 1024 \
   --num_workers 6 \
   --precision 16-mixed \
   --wandb_project tfbind_eval \
   --run_name eval_seed42_seenTF \
-  --output_dir /bml/ping/tfbind_review/tfbind_csbj/results/seed_42/seenTF_eval \
-  > /bml/ping/tfbind_review/tfbind_csbj/results/seed_42/seenTF_eval/eval_seenTF.log 2>&1 &
+  --output_dir ....../results/seed_42/seenTF_eval \
+  > ....../results/seed_42/seenTF_eval/eval_seenTF.log 2>&1 &
 
 '''
 
 #for unseen-TF test
 
 '''
-mkdir -p /bml/ping/tfbind_review/tfbind_csbj/results/seed_42/unseenTF_eval
+mkdir -p ....../results/seed_42/unseenTF_eval
 
 CUDA_VISIBLE_DEVICES=1 \
 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
 nohup python eval.py \
-  --ckpt_path /bml/ping/tfbind_review/tfbind_csbj/results/ckpts/epoch=16-val/pr_auc=0.5694-val/loss=0.1102.ckpt \
-  --test_dna_npy /bml/ping/tfbind_review/tfbind_csbj/data/dna_data/test/unseen/test_data.npy \
-  --test_labels_npy /bml/ping/tfbind_review/tfbind_csbj/data/dna_data/test/unseen/test_labels.npy \
-  --test_metadata_tsv /bml/ping/tfbind_review/tfbind_csbj/data/metadata/unseen_tf_metadata.tsv \
-  --fixed_tf_embs_pt /bml/ping/tfbind_review/tfbind_csbj/data/tf_data/fixed_length_200/unseen_tf/fixed_tf_embs.pt \
-  --fixed_tf_masks_pt /bml/ping/tfbind_review/tfbind_csbj/data/tf_data/fixed_length_200/unseen_tf/fixed_tf_masks.pt \
-  --test_pairs_file /bml/ping/tfbind_review/tfbind_csbj/data/cached_pairs/seed42/unseentf/test_pairs.npy \
+  --ckpt_path ....../results/ckpts/epoch=16-val/pr_auc=0.5694-val/loss=0.1102.ckpt \
+  --test_dna_npy ....../data/dna_data/test/unseen/test_data.npy \
+  --test_labels_npy ....../data/dna_data/test/unseen/test_labels.npy \
+  --test_metadata_tsv ....../data/metadata/unseen_tf_metadata.tsv \
+  --fixed_tf_embs_pt ....../data/tf_data/fixed_length_200/unseen_tf/fixed_tf_embs.pt \
+  --fixed_tf_masks_pt ....../data/tf_data/fixed_length_200/unseen_tf/fixed_tf_masks.pt \
+  --test_pairs_file ....../data/cached_pairs/seed42/unseentf/test_pairs.npy \
   --use_cell_type \
   --cell_type_dim 16 \
-  --cell_type_ids_npy /bml/ping/tfbind_review/tfbind_csbj/data/metadata/unseen_cell_type_ids.npy \
+  --cell_type_ids_npy ....../data/metadata/unseen_cell_type_ids.npy \
   --protein_in_dim 1024 \
   --batch_size 1024 \
   --num_workers 6 \
   --precision 16-mixed \
   --wandb_project tfbind_eval \
   --run_name eval_seed42_unseenTF \
-  --output_dir /bml/ping/tfbind_review/tfbind_csbj/results/seed_42/unseenTF_eval \
-  > /bml/ping/tfbind_review/tfbind_csbj/results/seed_42/unseenTF_eval/eval_unseenTF.log 2>&1 &
+  --output_dir ....../results/seed_42/unseenTF_eval \
+  > ....../results/seed_42/unseenTF_eval/eval_unseenTF.log 2>&1 &
 
 '''
 
