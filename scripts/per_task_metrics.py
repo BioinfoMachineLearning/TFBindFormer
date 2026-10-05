@@ -132,15 +132,15 @@ if __name__ == "__main__":
 
 #unseentf
 '''
-mkdir -p /bml/ping/tfbind_review/tfbind_csbj/results/unseenTF_eval/per_tf_metrices
+mkdir -p ....../results/unseenTF_eval/per_tf_metrices
 
 nohup python per_task_metrics.py \
-  --probs_npy /bml/ping/tfbind_review/tfbind_csbj/results/unseenTF_eval/metrics_data/probs.npy \
-  --targets_npy /bml/ping/tfbind_review/tfbind_csbj/results/unseenTF_eval/metrics_data/targets.npy \
-  --test_pairs_npy /bml/ping/tfbind_review/tfbind_csbj/data/cached_pairs/seed42/unseentf/test_pairs.npy \
-  --metadata_tsv /bml/ping/tfbind_review/tfbind_csbj/data/metadata/unseen_tf_metadata.tsv \
-  --out_csv /bml/ping/tfbind_review/tfbind_csbj/results/unseenTF_eval/per_tf_metrices/per_tf_metrics.csv \
+  --probs_npy ....../results/unseenTF_eval/metrics_data/probs.npy \
+  --targets_npy ....../results/unseenTF_eval/metrics_data/targets.npy \
+  --test_pairs_npy ....../data/cached_pairs/seed42/unseentf/test_pairs.npy \
+  --metadata_tsv ....../data/metadata/unseen_tf_metadata.tsv \
+  --out_csv ....../results/unseenTF_eval/per_tf_metrices/per_tf_metrics.csv \
   --threshold 0.3 \
-  >/bml/ping/tfbind_review/tfbind_csbj/results/unseenTF_eval/per_tf_metrices/per_tf_metrics.log 2>&1 &
+  >....../results/unseenTF_eval/per_tf_metrices/per_tf_metrics.log 2>&1 &
 
 '''
