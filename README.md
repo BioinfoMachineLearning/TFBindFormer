@@ -119,7 +119,6 @@ TFBindFormer/
 │   ├── model.py
 │   └── utils.py
 ├── README.md
-├── CHANGELOG.md
 ├── environment.yml
 └── LICENSE
 ```
