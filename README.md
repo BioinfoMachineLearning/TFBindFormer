@@ -424,38 +424,50 @@ Run training from the `scripts/` directory:
 pwd
 # .../TFBindFormer/scripts
 
+mkdir -p ....../results/seed42
+mkdir -p ....../results/seed42/ckpts
+
+CUDA_VISIBLE_DEVICES=0 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
 nohup python train.py \
-  --train_dna_npy ../data/dna_data/train/train_oneHot.npy \
-  --train_labels_npy ../data/dna_data/train/train_labels.npy \
-  --train_metadata_tsv ../data/tf_data/metadata_tfbs.tsv \
-  --val_dna_npy ../data/dna_data/val/valid_oneHot.npy \
-  --val_labels_npy ../data/dna_data/val/valid_labels.npy \
-  --val_metadata_tsv ../data/tf_data/metadata_tfbs.tsv \
-  --embedding_dir ../data/tf_data/tf_embeddings \
+  --train_dna_npy ....../data/dna_data/train/train_data.npy \
+  --train_labels_npy ....../data/dna_data/train/train_labels.npy \
+  --train_metadata_tsv ....../data/metadata/seen_tf_metadata.tsv \
+  --val_dna_npy ....../data/dna_data/val/val_data.npy \
+  --val_labels_npy ....../data/dna_data/val/val_labels.npy \
+  --val_metadata_tsv ....../data/metadata/seen_tf_metadata.tsv \
+  --fixed_tf_embs_pt ....../data/tf_data/fixed_length_200/seen_tf/fixed_tf_embs.pt \
+  --fixed_tf_masks_pt ....../data/tf_data/fixed_length_200/seen_tf/fixed_tf_masks.pt \
+  --train_pairs_file ....../data/cached_pairs/seed42/seentf/train_pairs.npy \
+  --val_pairs_file ....../data/cached_pairs/seed42/seentf/val_pairs.npy \
+  --use_cell_type \
+  --cell_type_dim 16 \
+  --cell_type_ids_npy ....../data/metadata/seen_cell_type_ids.npy \
+  --protein_in_dim 1024 \
   --epochs 20 \
   --batch_size 1024 \
   --num_workers 6 \
   --lr 1e-4 \
-  --neg_fraction 0.015 \
-  --use_cell_type \
-  --wandb_project tfbind-train \
-  --run_name tfbind_train \
-  --output_dir ./checkpoints/tfbind_train \
-  > tfbind_train.log 2>&1 &
+  --wandb_project tfbind \
+  --run_name tfbind_seed42 \
+  --output_dir ....../results/seed42/ckpts \
+  > ....../results/seed42/tfbind_train_seed42.log 2>&1 &
 ```
 
 This command trains TFBindFormer using preprocessed genomic DNA inputs,
-TF–DNA binding labels, precomputed TF protein embeddings, and cell-type
-information.
+TF–DNA binding labels, fixed-length TF protein representations, cached
+DNA–TF pair files, and cell-type information.
 
 - DNA sequence inputs are loaded from NumPy arrays
 - Binding labels are loaded from the corresponding label matrices
-- TF metadata specifies the TF/cell-type prediction tasks
-- Precomputed TF protein embeddings are loaded from `--embedding_dir`
+- Fixed-length TF protein embeddings are loaded from `--fixed_tf_embs_pt`
+- TF masks are loaded from `--fixed_tf_masks_pt`
+- Pre-generated training and validation DNA–TF pairs are loaded from
+  `--train_pairs_file` and `--val_pairs_file`
 - Cell-type embeddings are enabled with `--use_cell_type`
-- All positive pairs are retained
-- Negative pairs are sampled according to `--neg_fraction`
-- Model checkpoints are saved to the specified output directory
+- Cell-type IDs are loaded from `--cell_type_ids_npy`
+- Model checkpoints are selected based on validation AUPRC
+- Early stopping is applied with a patience of 5 epochs
+- Model checkpoints are saved to the directory specified by `--output_dir`
 - Training metrics can be tracked using Weights & Biases
 
 ---
@@ -473,17 +485,28 @@ Run:
 pwd
 # .../TFBindFormer/scripts
 
+mkdir -p ....../results/seed_42/seenTF_eval
+
+CUDA_VISIBLE_DEVICES=1 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
 nohup python eval.py \
-  --test_dna_npy ../data/dna_data/test/test_oneHot.npy \
-  --test_labels_npy ../data/dna_data/test/test_labels.npy \
-  --test_metadata_tsv ../data/tf_data/metadata_tfbs.tsv \
-  --embedding_dir ../data/tf_data/tf_embeddings \
-  --ckpt_path ../checkpoints/---.ckpt \
-  --batch_size 1024 \
+  --ckpt_path ....../results/ckpts/epoch=16-val/pr_auc=0.5694-val/loss=0.1102.ckpt \
+  --test_dna_npy ....../data/dna_data/test/seen/test_data.npy \
+  --test_labels_npy ....../data/dna_data/test/seen/test_labels.npy \
+  --test_metadata_tsv ....../data/metadata/seen_tf_metadata.tsv \
+  --fixed_tf_embs_pt ....../data/tf_data/fixed_length_200/seen_tf/fixed_tf_embs.pt \
+  --fixed_tf_masks_pt ....../data/tf_data/fixed_length_200/seen_tf/fixed_tf_masks.pt \
+  --test_pairs_file ....../data/cached_pairs/seed42/seentf/test_pairs.npy \
   --use_cell_type \
+  --cell_type_dim 16 \
+  --cell_type_ids_npy ....../data/metadata/seen_cell_type_ids.npy \
+  --protein_in_dim 1024 \
+  --batch_size 1024 \
+  --num_workers 6 \
+  --precision 16-mixed \
   --wandb_project tfbind_eval \
-  --run_name tfbind_seen_eval \
-  > tfbind_seen_eval.log 2>&1 &
+  --run_name eval_seed42_seenTF \
+  --output_dir ....../results/seed_42/seenTF_eval \
+  > ....../results/seed_42/seenTF_eval/eval_seenTF.log 2>&1 &
 ```
 
 This command loads the specified TFBindFormer checkpoint and evaluates
@@ -503,14 +526,29 @@ ability to generalize to unseen transcription factors to be assessed.
 The unseen-TF dataset can be evaluated using the same evaluation pipeline:
 
 ```bash
-python eval.py \
-  --test_dna_npy <unseen_test_dna.npy> \
-  --test_labels_npy <unseen_test_labels.npy> \
-  --test_metadata_tsv <unseen_metadata.tsv> \
-  --embedding_dir ../data/tf_data/tf_embeddings \
-  --ckpt_path ../checkpoints/---.ckpt \
+mkdir -p ....../results/seed_42/unseenTF_eval
+
+CUDA_VISIBLE_DEVICES=1 \
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
+nohup python eval.py \
+  --ckpt_path ....../results/ckpts/epoch=16-val/pr_auc=0.5694-val/loss=0.1102.ckpt \
+  --test_dna_npy ....../data/dna_data/test/unseen/test_data.npy \
+  --test_labels_npy ....../data/dna_data/test/unseen/test_labels.npy \
+  --test_metadata_tsv ....../data/metadata/unseen_tf_metadata.tsv \
+  --fixed_tf_embs_pt ....../data/tf_data/fixed_length_200/unseen_tf/fixed_tf_embs.pt \
+  --fixed_tf_masks_pt ....../data/tf_data/fixed_length_200/unseen_tf/fixed_tf_masks.pt \
+  --test_pairs_file ....../data/cached_pairs/seed42/unseentf/test_pairs.npy \
+  --use_cell_type \
+  --cell_type_dim 16 \
+  --cell_type_ids_npy ....../data/metadata/unseen_cell_type_ids.npy \
+  --protein_in_dim 1024 \
   --batch_size 1024 \
-  --use_cell_type
+  --num_workers 6 \
+  --precision 16-mixed \
+  --wandb_project tfbind_eval \
+  --run_name eval_seed42_unseenTF \
+  --output_dir ....../results/seed_42/unseenTF_eval \
+  > ....../results/seed_42/unseenTF_eval/eval_unseenTF.log 2>&1 &
 ```
 
 Replace the placeholder paths with the corresponding unseen-TF data files
@@ -535,7 +573,7 @@ and module definitions.
 The depth of the hybrid cross-attention module controls how many
 cross-attention blocks are stacked sequentially.
 
-Each block models residue–nucleotide interactions through cross-attention
+Each block models TF-DNA interactions through cross-attention
 followed by feed-forward transformations.
 
 Advanced users may modify these settings to explore alternative model
