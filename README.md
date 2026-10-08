@@ -173,8 +173,7 @@ https://doi.org/10.5281/zenodo.23050978
 
 The seen-TF dataset contains:
 
-- **100 transcription factors**
-- **422 TF/cell-type prediction tasks**
+- **100 transcription factors,  corresponding to 422 TF/cell-type prediction tasks**
 
 The genomic chromosome split is:
 
@@ -186,8 +185,7 @@ The genomic chromosome split is:
 
 The zero-shot evaluation dataset contains:
 
-- **8 unseen transcription factors**
-- **35 TF/cell-type prediction tasks**
+- **8 unseen transcription factors, corresponding to 35 TF/cell-type prediction tasks**
 
 These TFs are completely excluded from model training and validation
 and are used only for zero-shot evaluation.
