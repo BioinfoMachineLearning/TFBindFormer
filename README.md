@@ -200,7 +200,7 @@ Negative pairs are sampled using predefined sampling fractions:
 
 | Dataset | Negative sampling fraction |
 | --- | ---: |
-| Training | 0.003 |
+| Training | 0.03 |
 | Validation | 0.5 |
 | Seen-TF test | 1.0 |
 | Unseen-TF test | 1.0 |
