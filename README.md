@@ -78,7 +78,7 @@ differences in TF–DNA binding patterns.
 
 ## Features
 
-- Hybrid cross-attention architecture for explicit residue–nucleotide interactions
+- Hybrid cross-attention architecture for explicit TF–DNA interactions
 - Integration of TF amino-acid sequence and protein structure information
 - Cell-type-aware TF–DNA binding prediction
 - Zero-shot evaluation on unseen transcription factors
