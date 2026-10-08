@@ -74,12 +74,6 @@ Cell-type information is incorporated into TFBindFormer as an additional
 input representation, enabling the model to capture cell-type-specific
 differences in TF–DNA binding patterns.
 
-### 4. Zero-shot TF evaluation is added
-
-The revised framework includes explicit zero-shot evaluation on the
-8 held-out transcription factors to assess the model's ability to
-generalize to unseen TFs.
-
 ---
 
 ## Features
