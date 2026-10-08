@@ -351,7 +351,11 @@ The TF protein embeddings generated in the previous step may have different
 sequence lengths. TFBindFormer uses a fixed protein representation length of
 **200 tokens** for model training and evaluation.
 
-The embeddings are therefore reduced or padded to a fixed length of 200 using
+The model-ready fixed-length TF protein embeddings used in this study are
+included in the released dataset.
+
+To reproduce this preprocessing step from the variable-length TF embeddings,
+reduce or pad the embeddings to a fixed length of 200 using
 `reduce_or_pad_tf_embeddings.py`.
 
 #### Seen TFs
