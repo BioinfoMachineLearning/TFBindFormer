@@ -35,7 +35,7 @@ TFBindFormer contains the following major components:
 - A hybrid cross-attention module for modeling interactions between TF
   residues and DNA positions
 - Cell-type embeddings for incorporating cell-type-specific information
-- Position-weighted pooling and a prediction head for TF–DNA binding
+- Content-aware pooling and a prediction head for TF–DNA binding
   classification
 
 ---
